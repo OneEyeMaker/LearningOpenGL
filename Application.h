@@ -18,6 +18,8 @@ private:
     static void handleKeyEvent(GLFWwindow *window, int key, [[maybe_unused]] int scanCode, int action,
                                [[maybe_unused]] int modifiers);
 
+    void setIcon();
+
     void setupCallbacks();
 
     void setupRendering();

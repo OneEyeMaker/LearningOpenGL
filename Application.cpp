@@ -1,4 +1,7 @@
 #include <iostream>
+#include <string>
+
+#include <stb/stb_image.h>
 
 #include "Application.h"
 
@@ -24,6 +27,7 @@ bool Application::initialize() {
         dispose();
         return false;
     }
+    setIcon();
     return true;
 }
 
@@ -36,6 +40,31 @@ void Application::run() {
         glfwPollEvents();
     }
     dispose();
+}
+
+void Application::setIcon() {
+    std::string iconPaths[] = {
+            "resources/icons/icon128.png",
+            "resources/icons/icon64.png",
+            "resources/icons/icon32.png"
+    };
+    GLFWimage icons[3];
+    int count = 0;
+    for (const auto &iconPath: iconPaths) {
+        int width;
+        int height;
+        int channelsCount;
+        unsigned char *imageData = stbi_load(iconPath.c_str(), &width, &height, &channelsCount, 0);
+        if (imageData != nullptr) {
+            icons[count++] = GLFWimage(width, height, imageData);
+        }
+    }
+    if (count > 0) {
+        glfwSetWindowIcon(window, count, icons);
+    }
+    while (count > 0) {
+        stbi_image_free(icons[--count].pixels);
+    }
 }
 
 void Application::setupCallbacks() {
