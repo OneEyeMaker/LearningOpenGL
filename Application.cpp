@@ -42,7 +42,7 @@ void Application::run() {
     dispose();
 }
 
-void Application::setIcon() {
+void Application::setIcon() const {
     std::string iconPaths[] = {
             "resources/icons/icon128.png",
             "resources/icons/icon64.png",
@@ -67,7 +67,7 @@ void Application::setIcon() {
     }
 }
 
-void Application::setupCallbacks() {
+void Application::setupCallbacks() const {
     glfwSetFramebufferSizeCallback(window, resizeWindowFramebuffer);
     glfwSetKeyCallback(window, handleKeyEvent);
 }
