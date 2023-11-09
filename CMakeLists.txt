@@ -22,6 +22,8 @@ link_libraries(
 add_executable(LearningOpenGL
         main.cpp
         glad.c
+        Application.cpp
+        Application.h
 )
 
 add_custom_target(CopyResources

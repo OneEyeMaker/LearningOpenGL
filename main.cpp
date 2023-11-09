@@ -1,6 +1,10 @@
-#include <iostream>
+#include "Application.h"
 
 int main() {
-    std::cout << "Learning OpenGL." << std::endl;
+    Application application;
+    if (!application.initialize()) {
+        return 1;
+    }
+    application.run();
     return 0;
 }
