@@ -1,11 +1,12 @@
 #include <iostream>
 #include <string>
 
+#define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
 #include "Application.h"
 
-Application::Application() {
+Application::Application() : backgroundTexture(0), foregroundTexture(1) {
     window = nullptr;
 }
 
@@ -37,11 +38,12 @@ bool Application::initialize() {
 
 void Application::run() {
     setupCallbacks();
-    setupRendering();
-    while (!glfwWindowShouldClose(window)) {
-        render();
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+    if (setupRendering()) {
+        while (!glfwWindowShouldClose(window)) {
+            render();
+            glfwSwapBuffers(window);
+            glfwPollEvents();
+        }
     }
     dispose();
 }
@@ -76,19 +78,36 @@ void Application::setupCallbacks() const {
     glfwSetKeyCallback(window, handleKeyEvent);
 }
 
-void Application::setupRendering() {
+bool Application::setupRendering() {
+    if (!shader.compileAndLink("shaders/vertex.glsl", "shaders/fragment.glsl")) {
+        return false;
+    }
+    if (!backgroundTexture.load("resources/textures/background.png") ||
+        !foregroundTexture.load("resources/textures/foreground.png")) {
+        return false;
+    }
+    shader.use();
+    shader.setInteger("backgroundTexture", 0);
+    shader.setInteger("foregroundTexture", 1);
     glfwSwapInterval(1);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    return true;
 }
 
 void Application::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    backgroundTexture.use();
+    foregroundTexture.use();
+    shader.use();
 }
 
 void Application::dispose() {
     if (window != nullptr) {
+        shader.dispose();
+        foregroundTexture.dispose();
+        backgroundTexture.dispose();
         glfwDestroyWindow(window);
         window = nullptr;
     }

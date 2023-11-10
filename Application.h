@@ -4,6 +4,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "Shader.h"
+#include "Texture.h"
+
 class Application {
 public:
     Application();
@@ -24,13 +27,16 @@ private:
 
     void setupCallbacks() const;
 
-    void setupRendering();
+    bool setupRendering();
 
     void render();
 
     void dispose();
 
     GLFWwindow *window;
+    Shader shader;
+    Texture backgroundTexture;
+    Texture foregroundTexture;
 };
 
 #endif //LEARNINGOPENGL_APPLICATION_H

@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_compile_definitions(
         _GLFW_WIN32
-        STB_IMAGE_IMPLEMENTATION
 )
 
 include_directories(
