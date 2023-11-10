@@ -6,6 +6,8 @@
 
 class Application {
 public:
+    Application();
+
     bool initialize();
 
     void run();
@@ -28,7 +30,7 @@ private:
 
     void dispose();
 
-    GLFWwindow *window = nullptr;
+    GLFWwindow *window;
 };
 
 #endif //LEARNINGOPENGL_APPLICATION_H

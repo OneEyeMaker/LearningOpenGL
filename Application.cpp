@@ -5,6 +5,10 @@
 
 #include "Application.h"
 
+Application::Application() {
+    window = nullptr;
+}
+
 bool Application::initialize() {
     if (!glfwInit()) {
         std::cout << "Error: unable to initialize GLFW." << std::endl;
