@@ -24,6 +24,8 @@ add_executable(LearningOpenGL
         glad.c
         Application.cpp
         Application.h
+        Shader.cpp
+        Shader.h
 )
 
 add_custom_target(CopyResources
