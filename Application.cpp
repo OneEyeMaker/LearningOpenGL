@@ -25,7 +25,7 @@ void Application::finalize() {
     glfwTerminate();
 }
 
-Application::Application() : meshRotation(0.0f, 0.0f, 0.0f) {
+Application::Application() : meshRotation(0.0f), inputAxes(0.0f) {
     aspectRatio = 1.0f;
     window = nullptr;
 }
@@ -118,6 +118,7 @@ bool Application::setupRendering() {
 void Application::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     shader.use();
+    meshRotation += inputAxes * 0.0625f;
     auto model = glm::toMat4(glm::quat(meshRotation));
     auto view = glm::mat4(1.0f);
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -4.0f));
@@ -152,7 +153,55 @@ void Application::resizeWindowFramebuffer([[maybe_unused]] GLFWwindow *window, i
 
 void Application::handleKeyEvent(GLFWwindow *window, int key, [[maybe_unused]] int scanCode, int action,
                                  [[maybe_unused]] int modifiers) {
+    if (key == GLFW_KEY_UNKNOWN) {
+        return;
+    }
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    }
+    auto *application = (Application *) glfwGetWindowUserPointer(window);
+    if (application == nullptr) {
+        return;
+    }
+    if (action == GLFW_PRESS) {
+        switch (key) {
+            case GLFW_KEY_0:
+            case GLFW_KEY_KP_0:
+                application->meshRotation = glm::vec3(0.0f);
+                break;
+            case GLFW_KEY_W:
+                application->inputAxes.x = -1.0f;
+                break;
+            case GLFW_KEY_S:
+                application->inputAxes.x = 1.0f;
+                break;
+            case GLFW_KEY_A:
+                application->inputAxes.y = -1.0f;
+                break;
+            case GLFW_KEY_D:
+                application->inputAxes.y = 1.0f;
+                break;
+            case GLFW_KEY_E:
+                application->inputAxes.z = -1.0f;
+                break;
+            case GLFW_KEY_Q:
+                application->inputAxes.z = 1.0f;
+                break;
+        }
+    } else if (action == GLFW_RELEASE) {
+        switch (key) {
+            case GLFW_KEY_W:
+            case GLFW_KEY_S:
+                application->inputAxes.x = 0.0f;
+                break;
+            case GLFW_KEY_A:
+            case GLFW_KEY_D:
+                application->inputAxes.y = 0.0f;
+                break;
+            case GLFW_KEY_E:
+            case GLFW_KEY_Q:
+                application->inputAxes.z = 0.0f;
+                break;
+        }
     }
 }

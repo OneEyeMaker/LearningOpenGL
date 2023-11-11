@@ -1,8 +1,6 @@
 #ifndef LEARNINGOPENGL_APPLICATION_H
 #define LEARNINGOPENGL_APPLICATION_H
 
-#include <map>
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -45,6 +43,7 @@ private:
     Mesh mesh;
     Shader shader;
     glm::vec3 meshRotation;
+    glm::vec3 inputAxes;
     float aspectRatio;
     GLFWwindow *window;
 };
