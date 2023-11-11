@@ -10,6 +10,7 @@
 
 #include "Application.h"
 
+std::map<GLFWwindow *, Application *> Application::instances{};
 bool Application::isSetupComplete = false;
 
 bool Application::setup() {
@@ -26,6 +27,7 @@ void Application::finalize() {
 }
 
 Application::Application() : meshRotation(0.0f, 0.0f, 0.0f) {
+    aspectRatio = 1.0f;
     window = nullptr;
 }
 
@@ -52,6 +54,7 @@ bool Application::initialize() {
         return false;
     }
     setIcon();
+    instances[window] = this;
     return true;
 }
 
@@ -119,7 +122,7 @@ void Application::render() {
     auto model = glm::toMat4(glm::quat(meshRotation));
     auto view = glm::mat4(1.0f);
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -4.0f));
-    auto projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
+    auto projection = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
     shader.setMatrix4("modelTransform", model);
     shader.setMatrix4("viewTransform", view);
     shader.setMatrix4("projectionTransform", projection);
@@ -128,6 +131,7 @@ void Application::render() {
 
 void Application::dispose() {
     if (window != nullptr) {
+        instances.erase(window);
         mesh.dispose();
         shader.dispose();
         glfwDestroyWindow(window);
@@ -141,6 +145,10 @@ void Application::handleLibraryError(int code, const char *message) {
 
 void Application::resizeWindowFramebuffer([[maybe_unused]] GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
+    Application *application = instances[window];
+    if (application != nullptr) {
+        application->aspectRatio = (float) width / (float) height;
+    }
 }
 
 void Application::handleKeyEvent(GLFWwindow *window, int key, [[maybe_unused]] int scanCode, int action,

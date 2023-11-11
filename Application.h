@@ -1,6 +1,8 @@
 #ifndef LEARNINGOPENGL_APPLICATION_H
 #define LEARNINGOPENGL_APPLICATION_H
 
+#include <map>
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -38,11 +40,13 @@ private:
 
     void dispose();
 
+    static std::map<GLFWwindow *, Application *> instances;
     static bool isSetupComplete;
 
     Mesh mesh;
     Shader shader;
     glm::vec3 meshRotation;
+    float aspectRatio;
     GLFWwindow *window;
 };
 
