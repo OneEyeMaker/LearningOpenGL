@@ -10,13 +10,28 @@
 
 #include "Application.h"
 
+bool Application::isSetupComplete = false;
+
+bool Application::setup() {
+    if (!glfwInit()) {
+        std::cout << "Error: unable to initialize GLFW." << std::endl;
+        return false;
+    }
+    isSetupComplete = true;
+    return true;
+}
+
+void Application::finalize() {
+    glfwTerminate();
+}
+
 Application::Application() : meshRotation(0.0f, 0.0f, 0.0f) {
     window = nullptr;
 }
 
 bool Application::initialize() {
-    if (!glfwInit()) {
-        std::cout << "Error: unable to initialize GLFW." << std::endl;
+    if (!isSetupComplete) {
+        std::cout << "Error: application setup is not completed." << std::endl;
         return false;
     }
     glfwSetErrorCallback(handleLibraryError);
@@ -118,7 +133,6 @@ void Application::dispose() {
         glfwDestroyWindow(window);
         window = nullptr;
     }
-    glfwTerminate();
 }
 
 void Application::handleLibraryError(int code, const char *message) {

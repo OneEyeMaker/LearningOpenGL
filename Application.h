@@ -10,6 +10,10 @@
 
 class Application {
 public:
+    static bool setup();
+
+    static void finalize();
+
     Application();
 
     bool initialize();
@@ -33,6 +37,8 @@ private:
     void render();
 
     void dispose();
+
+    static bool isSetupComplete;
 
     Mesh mesh;
     Shader shader;
