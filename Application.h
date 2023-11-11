@@ -3,9 +3,10 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
+#include "Mesh.h"
 #include "Shader.h"
-#include "Texture.h"
 
 class Application {
 public:
@@ -33,10 +34,10 @@ private:
 
     void dispose();
 
-    GLFWwindow *window;
+    Mesh mesh;
     Shader shader;
-    Texture backgroundTexture;
-    Texture foregroundTexture;
+    glm::vec3 meshRotation;
+    GLFWwindow *window;
 };
 
 #endif //LEARNINGOPENGL_APPLICATION_H

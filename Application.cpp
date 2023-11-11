@@ -1,12 +1,16 @@
 #include <iostream>
 #include <string>
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 #define STB_IMAGE_IMPLEMENTATION
+
 #include <stb/stb_image.h>
 
 #include "Application.h"
 
-Application::Application() : backgroundTexture(0), foregroundTexture(1) {
+Application::Application() : meshRotation(0.0f, 0.0f, 0.0f) {
     window = nullptr;
 }
 
@@ -82,13 +86,11 @@ bool Application::setupRendering() {
     if (!shader.compileAndLink("shaders/vertex.glsl", "shaders/fragment.glsl")) {
         return false;
     }
-    if (!backgroundTexture.load("resources/textures/background.png") ||
-        !foregroundTexture.load("resources/textures/foreground.png")) {
+    if (!mesh.loadCube()) {
         return false;
     }
     shader.use();
-    shader.setInteger("backgroundTexture", 0);
-    shader.setInteger("foregroundTexture", 1);
+    mesh.setupRendering(shader);
     glfwSwapInterval(1);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -98,16 +100,21 @@ bool Application::setupRendering() {
 
 void Application::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    backgroundTexture.use();
-    foregroundTexture.use();
     shader.use();
+    auto model = glm::toMat4(glm::quat(meshRotation));
+    auto view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -4.0f));
+    auto projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
+    shader.setMatrix4("modelTransform", model);
+    shader.setMatrix4("viewTransform", view);
+    shader.setMatrix4("projectionTransform", projection);
+    mesh.draw();
 }
 
 void Application::dispose() {
     if (window != nullptr) {
+        mesh.dispose();
         shader.dispose();
-        foregroundTexture.dispose();
-        backgroundTexture.dispose();
         glfwDestroyWindow(window);
         window = nullptr;
     }
