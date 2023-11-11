@@ -32,6 +32,14 @@ add_executable(LearningOpenGL
         Vertex.h
 )
 
+if (WIN32)
+    if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+        target_link_options(LearningOpenGL
+                PRIVATE /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup
+        )
+    endif (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+endif (WIN32)
+
 add_custom_target(CopyResources
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/resources ${CMAKE_CURRENT_BINARY_DIR}/resources
 )
