@@ -40,7 +40,6 @@ private:
 
     void dispose();
 
-    static std::map<GLFWwindow *, Application *> instances;
     static bool isSetupComplete;
 
     Mesh mesh;

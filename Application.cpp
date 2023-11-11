@@ -10,7 +10,6 @@
 
 #include "Application.h"
 
-std::map<GLFWwindow *, Application *> Application::instances{};
 bool Application::isSetupComplete = false;
 
 bool Application::setup() {
@@ -53,8 +52,8 @@ bool Application::initialize() {
         dispose();
         return false;
     }
+    glfwSetWindowUserPointer(window, this);
     setIcon();
-    instances[window] = this;
     return true;
 }
 
@@ -131,9 +130,9 @@ void Application::render() {
 
 void Application::dispose() {
     if (window != nullptr) {
-        instances.erase(window);
         mesh.dispose();
         shader.dispose();
+        glfwSetWindowUserPointer(window, nullptr);
         glfwDestroyWindow(window);
         window = nullptr;
     }
@@ -145,7 +144,7 @@ void Application::handleLibraryError(int code, const char *message) {
 
 void Application::resizeWindowFramebuffer([[maybe_unused]] GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
-    Application *application = instances[window];
+    auto *application = (Application *) glfwGetWindowUserPointer(window);
     if (application != nullptr) {
         application->aspectRatio = (float) width / (float) height;
     }
