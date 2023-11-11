@@ -27,6 +27,9 @@ add_executable(LearningOpenGL
         Shader.h
         Texture.cpp
         Texture.h
+        Mesh.cpp
+        Mesh.h
+        Vertex.h
 )
 
 add_custom_target(CopyResources
