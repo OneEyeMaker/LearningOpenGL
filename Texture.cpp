@@ -1,10 +1,11 @@
 #include <iostream>
+#include <utility>
 
 #include <stb/stb_image.h>
 
 #include "Texture.h"
 
-Texture::Texture(unsigned int index) : index(index) {
+Texture::Texture(std::string name, unsigned int index) : name(std::move(name)), index(index) {
     handle = 0;
     isLoaded = false;
 }
@@ -32,6 +33,10 @@ bool Texture::load(const std::string &texturePath) {
     stbi_image_free(imageData);
     isLoaded = true;
     return true;
+}
+
+void Texture::setupRendering(const Shader &shader) const {
+    shader.setInteger(name, (int) index);
 }
 
 void Texture::use() const {
