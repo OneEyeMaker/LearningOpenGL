@@ -1,11 +1,10 @@
 #include <iostream>
 #include <string>
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/quaternion.hpp>
-
 #define STB_IMAGE_IMPLEMENTATION
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <stb/stb_image.h>
 
 #include "Application.h"
@@ -26,6 +25,8 @@ void Application::finalize() {
 }
 
 Application::Application() : meshRotation(0.0f), inputAxes(0.0f) {
+    lastFrameTime = 0.0f;
+    deltaTime = 0.0f;
     aspectRatio = 1.0f;
     window = nullptr;
 }
@@ -112,13 +113,18 @@ bool Application::setupRendering() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    lastFrameTime = (float) glfwGetTime();
     return true;
 }
 
 void Application::render() {
+    auto currentFrameTime = (float) glfwGetTime();
+    deltaTime = currentFrameTime - lastFrameTime;
+    lastFrameTime = currentFrameTime;
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     shader.use();
-    meshRotation += inputAxes * 0.0625f;
+    meshRotation += inputAxes * (2.0f * deltaTime);
     auto model = glm::toMat4(glm::quat(meshRotation));
     auto view = glm::mat4(1.0f);
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -4.0f));

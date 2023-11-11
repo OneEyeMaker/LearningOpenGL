@@ -44,6 +44,8 @@ private:
     Shader shader;
     glm::vec3 meshRotation;
     glm::vec3 inputAxes;
+    float lastFrameTime;
+    float deltaTime;
     float aspectRatio;
     GLFWwindow *window;
 };
