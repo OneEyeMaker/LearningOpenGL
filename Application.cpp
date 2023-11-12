@@ -24,7 +24,9 @@ void Application::finalize() {
     glfwTerminate();
 }
 
-Application::Application() : inputAxes(0.0f) {
+Application::Application() :
+        camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 10.0f)),
+        cameraInputAxes(0.0f), inputAxes(0.0f), lastMousePosition(-1.0f), mouseOffset(0.0f) {
     selectedMesh = 0;
     lastFrameTime = 0.0f;
     deltaTime = 0.0f;
@@ -99,6 +101,7 @@ void Application::setIcon() const {
 void Application::setupCallbacks() const {
     glfwSetFramebufferSizeCallback(window, resizeWindowFramebuffer);
     glfwSetKeyCallback(window, handleKeyEvent);
+    glfwSetCursorPosCallback(window, handleMouseEvent);
 }
 
 bool Application::setupRendering() {
@@ -116,8 +119,11 @@ bool Application::setupRendering() {
             }
         }
     }
+    camera.setMovementSpeed(2.0f);
+    camera.setMouseSensitivity(1.0f / 512.0f);
     shader.use();
     mesh.setupRendering(shader);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSwapInterval(1);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -134,13 +140,13 @@ void Application::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     shader.use();
     meshRotations[selectedMesh] += inputAxes * (2.0f * deltaTime);
+    camera.processKeyboardInput(cameraInputAxes, deltaTime);
+    auto view = camera.getViewMatrix();
+    auto projection = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
     for (int index = 0; index < meshRotations.size(); ++index) {
         auto model = glm::mat4(1.0f);
         model = glm::translate(model, meshPositions[index]);
         model *= glm::toMat4(glm::quat(meshRotations[index]));
-        auto view = glm::mat4(1.0f);
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -5.0f));
-        auto projection = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
         shader.setMatrix4("modelTransform", model);
         shader.setMatrix4("viewTransform", view);
         shader.setMatrix4("projectionTransform", projection);
@@ -185,6 +191,24 @@ void Application::handleKeyEvent(GLFWwindow *window, int key, [[maybe_unused]] i
     if (action == GLFW_PRESS) {
         unsigned int size = application->meshPositions.size();
         switch (key) {
+            case GLFW_KEY_W:
+                application->cameraInputAxes.z = 1.0f;
+                break;
+            case GLFW_KEY_S:
+                application->cameraInputAxes.z = -1.0f;
+                break;
+            case GLFW_KEY_A:
+                application->cameraInputAxes.x = -1.0f;
+                break;
+            case GLFW_KEY_D:
+                application->cameraInputAxes.x = 1.0f;
+                break;
+            case GLFW_KEY_LEFT_SHIFT:
+                application->cameraInputAxes.y = -1.0f;
+                break;
+            case GLFW_KEY_SPACE:
+                application->cameraInputAxes.y = 1.0f;
+                break;
             case GLFW_KEY_KP_5:
                 application->meshRotations[application->selectedMesh] = glm::vec3(0.0f);
                 break;
@@ -215,6 +239,18 @@ void Application::handleKeyEvent(GLFWwindow *window, int key, [[maybe_unused]] i
         }
     } else if (action == GLFW_RELEASE) {
         switch (key) {
+            case GLFW_KEY_W:
+            case GLFW_KEY_S:
+                application->cameraInputAxes.z = 0.0f;
+                break;
+            case GLFW_KEY_A:
+            case GLFW_KEY_D:
+                application->cameraInputAxes.x = 0.0f;
+                break;
+            case GLFW_KEY_LEFT_SHIFT:
+            case GLFW_KEY_SPACE:
+                application->cameraInputAxes.y = 0.0f;
+                break;
             case GLFW_KEY_KP_2:
             case GLFW_KEY_KP_8:
                 application->inputAxes.x = 0.0f;
@@ -229,4 +265,18 @@ void Application::handleKeyEvent(GLFWwindow *window, int key, [[maybe_unused]] i
                 break;
         }
     }
+}
+
+void Application::handleMouseEvent(GLFWwindow *window, double xPosition, double yPosition) {
+    auto *application = (Application *) glfwGetWindowUserPointer(window);
+    if (application == nullptr) {
+        return;
+    }
+    if (application->lastMousePosition.x < 0.0f && application->lastMousePosition.y < 0.0f) {
+        application->lastMousePosition = glm::vec2(xPosition, yPosition);
+    }
+    application->mouseOffset = glm::vec2(xPosition - application->lastMousePosition.x,
+                                         application->lastMousePosition.y - yPosition);
+    application->lastMousePosition = glm::vec2(xPosition, yPosition);
+    application->camera.processMouseInput(application->mouseOffset);
 }
