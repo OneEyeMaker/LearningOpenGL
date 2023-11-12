@@ -1,6 +1,8 @@
 #ifndef LEARNINGOPENGL_APPLICATION_H
 #define LEARNINGOPENGL_APPLICATION_H
 
+#include <vector>
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -42,8 +44,10 @@ private:
 
     Mesh mesh;
     Shader shader;
-    glm::vec3 meshRotation;
+    std::vector<glm::vec3> meshPositions;
+    std::vector<glm::vec3> meshRotations;
     glm::vec3 inputAxes;
+    unsigned int selectedMesh;
     float lastFrameTime;
     float deltaTime;
     float aspectRatio;
