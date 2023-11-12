@@ -171,41 +171,40 @@ void Application::handleKeyEvent(GLFWwindow *window, int key, [[maybe_unused]] i
     }
     if (action == GLFW_PRESS) {
         switch (key) {
-            case GLFW_KEY_0:
-            case GLFW_KEY_KP_0:
+            case GLFW_KEY_KP_5:
                 application->meshRotation = glm::vec3(0.0f);
                 break;
-            case GLFW_KEY_W:
+            case GLFW_KEY_KP_8:
                 application->inputAxes.x = -1.0f;
                 break;
-            case GLFW_KEY_S:
+            case GLFW_KEY_KP_2:
                 application->inputAxes.x = 1.0f;
                 break;
-            case GLFW_KEY_A:
+            case GLFW_KEY_KP_4:
                 application->inputAxes.y = -1.0f;
                 break;
-            case GLFW_KEY_D:
+            case GLFW_KEY_KP_6:
                 application->inputAxes.y = 1.0f;
                 break;
-            case GLFW_KEY_E:
+            case GLFW_KEY_KP_9:
                 application->inputAxes.z = -1.0f;
                 break;
-            case GLFW_KEY_Q:
+            case GLFW_KEY_KP_7:
                 application->inputAxes.z = 1.0f;
                 break;
         }
     } else if (action == GLFW_RELEASE) {
         switch (key) {
-            case GLFW_KEY_W:
-            case GLFW_KEY_S:
+            case GLFW_KEY_KP_2:
+            case GLFW_KEY_KP_8:
                 application->inputAxes.x = 0.0f;
                 break;
-            case GLFW_KEY_A:
-            case GLFW_KEY_D:
+            case GLFW_KEY_KP_4:
+            case GLFW_KEY_KP_6:
                 application->inputAxes.y = 0.0f;
                 break;
-            case GLFW_KEY_E:
-            case GLFW_KEY_Q:
+            case GLFW_KEY_KP_7:
+            case GLFW_KEY_KP_9:
                 application->inputAxes.z = 0.0f;
                 break;
         }
