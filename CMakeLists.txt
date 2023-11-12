@@ -30,6 +30,8 @@ add_executable(LearningOpenGL
         Mesh.cpp
         Mesh.h
         Vertex.h
+        Camera.cpp
+        Camera.h
 )
 
 if (WIN32)
