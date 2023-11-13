@@ -124,6 +124,9 @@ bool Application::setupRendering() {
     shader.use();
     mesh.setupRendering(shader);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    if (glfwRawMouseMotionSupported()) {
+        glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+    }
     glfwSwapInterval(1);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -158,6 +161,10 @@ void Application::dispose() {
     if (window != nullptr) {
         mesh.dispose();
         shader.dispose();
+        if (glfwRawMouseMotionSupported()) {
+            glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
+        }
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         glfwSetWindowUserPointer(window, nullptr);
         glfwDestroyWindow(window);
         window = nullptr;
