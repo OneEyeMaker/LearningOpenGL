@@ -57,6 +57,16 @@ void Shader::setInteger(const std::string &name, int value) const {
     glUniform1i(location, value);
 }
 
+void Shader::setVector3(const std::string &name, const glm::vec3 &vector) const {
+    int location = glGetUniformLocation(handle, name.c_str());
+    glUniform3fv(location, 1, glm::value_ptr(vector));
+}
+
+void Shader::setMatrix3(const std::string &name, const glm::mat3 &matrix) const {
+    int location = glGetUniformLocation(handle, name.c_str());
+    glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
 void Shader::setMatrix4(const std::string &name, const glm::mat4 &matrix) const {
     int location = glGetUniformLocation(handle, name.c_str());
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
