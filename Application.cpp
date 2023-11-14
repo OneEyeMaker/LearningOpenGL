@@ -120,7 +120,7 @@ bool Application::setupRendering() {
         }
     }
     camera.setMovementSpeed(2.0f);
-    camera.setMouseSensitivity(1.0f / 512.0f);
+    camera.setMouseSensitivity(0.0625f);
     shader.use();
     mesh.setupRendering(shader);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
