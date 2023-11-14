@@ -19,6 +19,8 @@ public:
 
     void updateAspectRatio(int width, int height);
 
+    void reset();
+
     void setMovementSpeed(float speed);
 
     void setMouseSensitivity(float sensitivity);

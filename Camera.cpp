@@ -43,6 +43,13 @@ void Camera::updateAspectRatio(int width, int height) {
     aspectRatio = (float) width / (float) height;
 }
 
+void Camera::reset() {
+    yaw = -90.0f;
+    pitch = 0.0f;
+    fieldOfView = 45.0f;
+    updateVectors();
+}
+
 void Camera::setMovementSpeed(float speed) {
     movementSpeed = speed;
 }

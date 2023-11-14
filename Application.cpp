@@ -243,6 +243,9 @@ void Application::handleKeyEvent(GLFWwindow *window, int key, [[maybe_unused]] i
             case GLFW_KEY_KP_3:
                 application->selectedMesh = (application->selectedMesh + 1) % size;
                 break;
+            case GLFW_KEY_KP_0:
+                application->camera.reset();
+                break;
         }
     } else if (action == GLFW_RELEASE) {
         switch (key) {
