@@ -39,7 +39,7 @@ void main() {
 
     vec3 viewDirection = normalize(viewPosition - vertexPosition);
     vec3 reflectionDirection = reflect(-lightDirection, normal);
-    float specularConstant = 0.75f * pow(max(dot(viewDirection, reflectionDirection), 0.0f), 32);
+    float specularConstant = 0.5f * pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16.0f);
 
-    fragmentColor = vec4((ambientConstant + diffuseConstant + specularConstant) * lightColor * objectColor, 1.0f);
+    fragmentColor = vec4(((ambientConstant + diffuseConstant) * objectColor + specularConstant) * lightColor, 1.0f);
 }
