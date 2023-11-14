@@ -3,6 +3,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 
+#include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <stb/stb_image.h>
@@ -122,6 +123,8 @@ bool Application::setupRendering() {
     camera.setMovementSpeed(2.0f);
     camera.setMouseSensitivity(0.0625f);
     shader.use();
+    shader.setVector3("lightPosition", glm::vec3(0.0f, 2.0f, 0.0f));
+    shader.setVector3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
     mesh.setupRendering(shader);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     if (glfwRawMouseMotionSupported()) {
@@ -130,7 +133,7 @@ bool Application::setupRendering() {
     glfwSwapInterval(1);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(0.125f, 0.125f, 0.125f, 1.0f);
     lastFrameTime = (float) glfwGetTime();
     return true;
 }
@@ -144,15 +147,18 @@ void Application::render() {
     shader.use();
     meshRotations[selectedMesh] += inputAxes * (2.0f * deltaTime);
     camera.processKeyboardInput(cameraInputAxes, deltaTime);
+    shader.setVector3("viewPosition", camera.position);
     auto view = camera.getViewMatrix();
     auto projection = camera.getProjectionMatrix();
     for (int index = 0; index < meshRotations.size(); ++index) {
         auto model = glm::mat4(1.0f);
         model = glm::translate(model, meshPositions[index]);
         model *= glm::toMat4(glm::quat(meshRotations[index]));
+        auto normal = glm::inverseTranspose(glm::mat3(model));
         shader.setMatrix4("modelTransform", model);
         shader.setMatrix4("viewTransform", view);
         shader.setMatrix4("projectionTransform", projection);
+        shader.setMatrix3("normalTransform", normal);
         mesh.draw();
     }
 }

@@ -26,10 +26,11 @@ public:
     void setMouseSensitivity(float sensitivity);
 
     const glm::vec3 globalUpDirection;
+
+    glm::vec3 position;
 private:
     void updateVectors();
 
-    glm::vec3 position;
     glm::vec3 frontDirection;
     glm::vec3 rightDirection;
     glm::vec3 upDirection;
