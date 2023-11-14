@@ -33,6 +33,8 @@ private:
 
     static void handleMouseEvent(GLFWwindow *window, double xPosition, double yPosition);
 
+    static void handleMouseScrollEvent(GLFWwindow *window, [[maybe_unused]] double xOffset, double yOffset);
+
     void setIcon() const;
 
     void setupCallbacks() const;
@@ -57,7 +59,6 @@ private:
     unsigned int selectedMesh;
     float lastFrameTime;
     float deltaTime;
-    float aspectRatio;
     GLFWwindow *window;
 };
 

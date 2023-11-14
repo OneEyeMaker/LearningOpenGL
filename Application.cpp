@@ -30,7 +30,6 @@ Application::Application() :
     selectedMesh = 0;
     lastFrameTime = 0.0f;
     deltaTime = 0.0f;
-    aspectRatio = 1.0f;
     window = nullptr;
 }
 
@@ -102,6 +101,7 @@ void Application::setupCallbacks() const {
     glfwSetFramebufferSizeCallback(window, resizeWindowFramebuffer);
     glfwSetKeyCallback(window, handleKeyEvent);
     glfwSetCursorPosCallback(window, handleMouseEvent);
+    glfwSetScrollCallback(window, handleMouseScrollEvent);
 }
 
 bool Application::setupRendering() {
@@ -145,7 +145,7 @@ void Application::render() {
     meshRotations[selectedMesh] += inputAxes * (2.0f * deltaTime);
     camera.processKeyboardInput(cameraInputAxes, deltaTime);
     auto view = camera.getViewMatrix();
-    auto projection = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
+    auto projection = camera.getProjectionMatrix();
     for (int index = 0; index < meshRotations.size(); ++index) {
         auto model = glm::mat4(1.0f);
         model = glm::translate(model, meshPositions[index]);
@@ -179,7 +179,7 @@ void Application::resizeWindowFramebuffer([[maybe_unused]] GLFWwindow *window, i
     glViewport(0, 0, width, height);
     auto *application = (Application *) glfwGetWindowUserPointer(window);
     if (application != nullptr) {
-        application->aspectRatio = (float) width / (float) height;
+        application->camera.updateAspectRatio(width, height);
     }
 }
 
@@ -286,4 +286,11 @@ void Application::handleMouseEvent(GLFWwindow *window, double xPosition, double 
                                          application->lastMousePosition.y - yPosition);
     application->lastMousePosition = glm::vec2(xPosition, yPosition);
     application->camera.processMouseInput(application->mouseOffset);
+}
+
+void Application::handleMouseScrollEvent(GLFWwindow *window, [[maybe_unused]] double xOffset, double yOffset) {
+    auto *application = (Application *) glfwGetWindowUserPointer(window);
+    if (application != nullptr) {
+        application->camera.processMouseScroll((float) yOffset);
+    }
 }
