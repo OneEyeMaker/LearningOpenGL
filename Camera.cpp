@@ -6,6 +6,8 @@ Camera::Camera(glm::vec3 globalUpDirection, glm::vec3 position) :
         globalUpDirection(globalUpDirection), position(position), frontDirection(), upDirection(), rightDirection() {
     yaw = -glm::pi<float>() * 0.5f;
     pitch = 0.0f;
+    aspectRatio = 1.0f;
+    fieldOfView = glm::pi<float>() * 0.25f;
     movementSpeed = 1.0f;
     mouseSensitivity = 1.0f;
     updateVectors();
@@ -13,6 +15,10 @@ Camera::Camera(glm::vec3 globalUpDirection, glm::vec3 position) :
 
 glm::mat4 Camera::getViewMatrix() const {
     return glm::lookAt(position, position + frontDirection, upDirection);
+}
+
+glm::mat4 Camera::getProjectionMatrix() const {
+    return glm::perspective(fieldOfView, aspectRatio, 0.1f, 100.0f);
 }
 
 void Camera::processKeyboardInput(const glm::vec3 &axes, float deltaTime) {
@@ -27,6 +33,14 @@ void Camera::processMouseInput(const glm::vec2 &offset) {
     yaw += rotation.x;
     pitch = glm::clamp(pitch + rotation.y, -glm::pi<float>() * 0.49f, glm::pi<float>() * 0.49f);
     updateVectors();
+}
+
+void Camera::processMouseScroll(float offset) {
+    fieldOfView = glm::clamp(fieldOfView - offset, glm::pi<float>() / 64.0f, glm::pi<float>() * 0.5f);
+}
+
+void Camera::updateAspectRatio(int width, int height) {
+    aspectRatio = (float) width / (float) height;
 }
 
 void Camera::setMovementSpeed(float speed) {

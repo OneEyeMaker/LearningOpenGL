@@ -9,9 +9,15 @@ public:
 
     [[nodiscard]] glm::mat4 getViewMatrix() const;
 
+    [[nodiscard]] glm::mat4 getProjectionMatrix() const;
+
     void processKeyboardInput(const glm::vec3 &axes, float deltaTime);
 
     void processMouseInput(const glm::vec2 &offset);
+
+    void processMouseScroll(float offset);
+
+    void updateAspectRatio(int width, int height);
 
     void setMovementSpeed(float speed);
 
@@ -27,6 +33,8 @@ private:
     glm::vec3 upDirection;
     float yaw;
     float pitch;
+    float aspectRatio;
+    float fieldOfView;
     float movementSpeed;
     float mouseSensitivity;
 };
