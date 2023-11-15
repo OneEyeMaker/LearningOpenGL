@@ -1,5 +1,12 @@
 #version 330 core
 
+struct Transform {
+    mat4 model;
+    mat4 view;
+    mat4 projection;
+    mat3 normal;
+};
+
 layout (location = 0) in vec3 aPosition;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec3 aColor;
@@ -10,15 +17,13 @@ out vec3 vertexNormal;
 out vec3 vertexColor;
 out vec2 textureCoordinates;
 
-uniform mat4 modelTransform;
-uniform mat4 viewTransform;
-uniform mat4 projectionTransform;
-uniform mat3 normalTransform;
+uniform Transform transform;
 
 void main() {
-    gl_Position = projectionTransform * viewTransform * modelTransform * vec4(aPosition, 1.0f);
-    vertexPosition = vec3(modelTransform * vec4(aPosition, 1.0f));
-    vertexNormal = normalTransform * aNormal;
+    vec4 worldPosition = transform.model * vec4(aPosition, 1.0f);
+    gl_Position = transform.projection * transform.view * worldPosition;
+    vertexPosition = vec3(worldPosition);
+    vertexNormal = transform.normal * aNormal;
     vertexColor = aColor;
     textureCoordinates = aTextureCoordinates;
 }

@@ -155,10 +155,10 @@ void Application::render() {
         model = glm::translate(model, meshPositions[index]);
         model *= glm::toMat4(glm::quat(meshRotations[index]));
         auto normal = glm::inverseTranspose(glm::mat3(model));
-        shader.setMatrix4("modelTransform", model);
-        shader.setMatrix4("viewTransform", view);
-        shader.setMatrix4("projectionTransform", projection);
-        shader.setMatrix3("normalTransform", normal);
+        shader.setMatrix4("transform.model", model);
+        shader.setMatrix4("transform.view", view);
+        shader.setMatrix4("transform.projection", projection);
+        shader.setMatrix3("transform.normal", normal);
         mesh.draw();
     }
 }
