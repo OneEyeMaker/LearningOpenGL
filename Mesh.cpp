@@ -9,10 +9,10 @@ Mesh::Mesh() {
     isLoaded = false;
 }
 
-bool Mesh::loadCube() {
+bool Mesh::loadCube(unsigned int &textureIndex) {
     textures = {
-            Texture("backgroundTexture", 0),
-            Texture("foregroundTexture", 1)
+            Texture("backgroundTexture", textureIndex++),
+            Texture("foregroundTexture", textureIndex++)
     };
     if (!textures[0].load("resources/textures/background.png") ||
         !textures[1].load("resources/textures/foreground.png")) {
@@ -99,10 +99,10 @@ bool Mesh::loadCube() {
     return true;
 }
 
-bool Mesh::loadOctahedron() {
+bool Mesh::loadOctahedron(unsigned int &textureIndex) {
     textures = {
-            Texture("backgroundTexture", 0),
-            Texture("foregroundTexture", 1)
+            Texture("backgroundTexture", textureIndex++),
+            Texture("foregroundTexture", textureIndex++)
     };
     if (!textures[0].load("resources/textures/background.png") ||
         !textures[1].load("resources/textures/foreground.png")) {
@@ -177,9 +177,9 @@ bool Mesh::loadOctahedron() {
     return true;
 }
 
-void Mesh::setupRendering(const Shader &shader) const {
+void Mesh::attachTextures(const Shader &shader) const {
     for (const auto &texture: textures) {
-        texture.setupRendering(shader);
+        texture.attach(shader);
     }
 }
 

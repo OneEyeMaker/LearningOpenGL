@@ -11,11 +11,11 @@ class Mesh {
 public:
     Mesh();
 
-    bool loadCube();
+    bool loadCube(unsigned int &textureIndex);
 
-    bool loadOctahedron();
+    bool loadOctahedron(unsigned int &textureIndex);
 
-    void setupRendering(const Shader &shader) const;
+    void attachTextures(const Shader &shader) const;
 
     void drawArrays() const;
 

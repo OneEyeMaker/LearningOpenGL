@@ -35,7 +35,7 @@ bool Texture::load(const std::string &texturePath) {
     return true;
 }
 
-void Texture::setupRendering(const Shader &shader) const {
+void Texture::attach(const Shader &shader) const {
     shader.setInteger(name, (int) index);
 }
 

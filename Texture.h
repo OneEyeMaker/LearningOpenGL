@@ -13,7 +13,7 @@ public:
 
     bool load(const std::string &texturePath);
 
-    void setupRendering(const Shader &shader) const;
+    void attach(const Shader &shader) const;
 
     void use() const;
 
