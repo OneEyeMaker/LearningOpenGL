@@ -94,24 +94,85 @@ bool Mesh::loadCube() {
             20, 21, 22,
             20, 22, 23
     };
-    glGenVertexArrays(1, &vertexArray);
-    glGenBuffers(1, &vertexBuffer);
-    glGenBuffers(1, &elementBuffer);
-    glBindVertexArray(vertexArray);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) (vertices.size() * sizeof(Vertex)), vertices.data(), GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr) (indices.size() * sizeof(unsigned int)), indices.data(),
-                 GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, position));
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, normal));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, vertexColor));
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, textureCoordinates));
-    glEnableVertexAttribArray(3);
-    glBindVertexArray(0);
+    loadVertexArray();
+    isLoaded = true;
+    return true;
+}
+
+bool Mesh::loadOctahedron() {
+    textures = {
+            Texture("backgroundTexture", 0),
+            Texture("foregroundTexture", 1)
+    };
+    if (!textures[0].load("resources/textures/background.png") ||
+        !textures[1].load("resources/textures/foreground.png")) {
+        dispose();
+        return false;
+    }
+    const float sqrt1_2 = glm::sqrt(0.5f);
+    const float sqrt1_3 = 1.0f / glm::sqrt(3.0f);
+    vertices = {
+            Vertex(glm::vec3(-sqrt1_2, 0.0f, 0.0f), glm::vec3(-sqrt1_3, sqrt1_3, sqrt1_3), glm::vec3(1.0f, 0.0f, 0.0f),
+                   glm::vec2(0.0f, 0.0f)),
+            Vertex(glm::vec3(0.0f, 0.0f, sqrt1_2), glm::vec3(-sqrt1_3, sqrt1_3, sqrt1_3), glm::vec3(0.0f, 1.0f, 0.0f),
+                   glm::vec2(1.0f, 0.0f)),
+            Vertex(glm::vec3(0.0f, sqrt1_2, 0.0f), glm::vec3(-sqrt1_3, sqrt1_3, sqrt1_3), glm::vec3(0.5f, 0.5f, 0.5f),
+                   glm::vec2(0.5f, 0.5f)),
+
+            Vertex(glm::vec3(0.0f, 0.0f, sqrt1_2), glm::vec3(sqrt1_3, sqrt1_3, sqrt1_3), glm::vec3(0.0f, 1.0f, 0.0f),
+                   glm::vec2(1.0f, 0.0f)),
+            Vertex(glm::vec3(sqrt1_2, 0.0f, 0.0f), glm::vec3(sqrt1_3, sqrt1_3, sqrt1_3), glm::vec3(0.0f, 0.0f, 1.0f),
+                   glm::vec2(1.0f, 1.0f)),
+            Vertex(glm::vec3(0.0f, sqrt1_2, 0.0f), glm::vec3(sqrt1_3, sqrt1_3, sqrt1_3), glm::vec3(0.5f, 0.5f, 0.5f),
+                   glm::vec2(0.5f, 0.5f)),
+
+            Vertex(glm::vec3(sqrt1_2, 0.0f, 0.0f), glm::vec3(sqrt1_3, sqrt1_3, -sqrt1_3), glm::vec3(0.0f, 0.0f, 1.0f),
+                   glm::vec2(1.0f, 1.0f)),
+            Vertex(glm::vec3(0.0f, 0.0f, -sqrt1_2), glm::vec3(sqrt1_3, sqrt1_3, -sqrt1_3), glm::vec3(1.0f, 1.0f, 0.0f),
+                   glm::vec2(0.0f, 1.0f)),
+            Vertex(glm::vec3(0.0f, sqrt1_2, 0.0f), glm::vec3(sqrt1_3, sqrt1_3, -sqrt1_3), glm::vec3(0.5f, 0.5f, 0.5f),
+                   glm::vec2(0.5f, 0.5f)),
+
+            Vertex(glm::vec3(0.0f, 0.0f, -sqrt1_2), glm::vec3(-sqrt1_3, sqrt1_3, -sqrt1_3), glm::vec3(1.0f, 1.0f, 0.0f),
+                   glm::vec2(0.0f, 1.0f)),
+            Vertex(glm::vec3(-sqrt1_2, 0.0f, 0.0f), glm::vec3(-sqrt1_3, sqrt1_3, -sqrt1_3), glm::vec3(1.0f, 0.0f, 0.0f),
+                   glm::vec2(0.0f, 0.0f)),
+            Vertex(glm::vec3(0.0f, sqrt1_2, 0.0f), glm::vec3(-sqrt1_3, sqrt1_3, -sqrt1_3), glm::vec3(0.5f, 0.5f, 0.5f),
+                   glm::vec2(0.5f, 0.5f)),
+
+            Vertex(glm::vec3(-sqrt1_2, 0.0f, 0.0f), glm::vec3(-sqrt1_3, -sqrt1_3, sqrt1_3), glm::vec3(1.0f, 0.0f, 0.0f),
+                   glm::vec2(0.0f, 0.0f)),
+            Vertex(glm::vec3(0.0f, -sqrt1_2, 0.0f), glm::vec3(-sqrt1_3, -sqrt1_3, sqrt1_3), glm::vec3(0.5f, 0.5f, 0.5f),
+                   glm::vec2(0.5f, 0.5f)),
+            Vertex(glm::vec3(0.0f, 0.0f, sqrt1_2), glm::vec3(-sqrt1_3, -sqrt1_3, sqrt1_3), glm::vec3(0.0f, 1.0f, 0.0f),
+                   glm::vec2(1.0f, 0.0f)),
+
+            Vertex(glm::vec3(0.0f, 0.0f, sqrt1_2), glm::vec3(sqrt1_3, -sqrt1_3, sqrt1_3), glm::vec3(0.0f, 1.0f, 0.0f),
+                   glm::vec2(1.0f, 0.0f)),
+            Vertex(glm::vec3(0.0f, -sqrt1_2, 0.0f), glm::vec3(sqrt1_3, -sqrt1_3, sqrt1_3), glm::vec3(0.5f, 0.5f, 0.5f),
+                   glm::vec2(0.5f, 0.5f)),
+            Vertex(glm::vec3(sqrt1_2, 0.0f, 0.0f), glm::vec3(sqrt1_3, -sqrt1_3, sqrt1_3), glm::vec3(0.0f, 0.0f, 1.0f),
+                   glm::vec2(1.0f, 1.0f)),
+
+            Vertex(glm::vec3(sqrt1_2, 0.0f, 0.0f), glm::vec3(sqrt1_3, -sqrt1_3, -sqrt1_3), glm::vec3(0.0f, 0.0f, 1.0f),
+                   glm::vec2(1.0f, 1.0f)),
+            Vertex(glm::vec3(0.0f, -sqrt1_2, 0.0f), glm::vec3(sqrt1_3, -sqrt1_3, -sqrt1_3), glm::vec3(0.5f, 0.5f, 0.5f),
+                   glm::vec2(0.5f, 0.5f)),
+            Vertex(glm::vec3(0.0f, 0.0f, -sqrt1_2), glm::vec3(sqrt1_3, -sqrt1_3, -sqrt1_3), glm::vec3(1.0f, 1.0f, 0.0f),
+                   glm::vec2(0.0f, 1.0f)),
+
+            Vertex(glm::vec3(0.0f, 0.0f, -sqrt1_2), glm::vec3(-sqrt1_3, -sqrt1_3, -sqrt1_3),
+                   glm::vec3(1.0f, 1.0f, 0.0f),
+                   glm::vec2(0.0f, 1.0f)),
+            Vertex(glm::vec3(0.0f, -sqrt1_2, 0.0f), glm::vec3(-sqrt1_3, -sqrt1_3, -sqrt1_3),
+                   glm::vec3(0.5f, 0.5f, 0.5f),
+                   glm::vec2(0.5f, 0.5f)),
+            Vertex(glm::vec3(-sqrt1_2, 0.0f, 0.0f), glm::vec3(-sqrt1_3, -sqrt1_3, -sqrt1_3),
+                   glm::vec3(1.0f, 0.0f, 0.0f),
+                   glm::vec2(0.0f, 0.0f))
+    };
+    indices = {};
+    loadVertexArray();
     isLoaded = true;
     return true;
 }
@@ -122,7 +183,16 @@ void Mesh::setupRendering(const Shader &shader) const {
     }
 }
 
-void Mesh::draw() const {
+void Mesh::drawArrays() const {
+    for (const auto &texture: textures) {
+        texture.use();
+    }
+    glBindVertexArray(vertexArray);
+    glDrawArrays(GL_TRIANGLES, 0, (int) vertices.size());
+    glBindVertexArray(0);
+}
+
+void Mesh::drawElements() const {
     for (const auto &texture: textures) {
         texture.use();
     }
@@ -151,4 +221,29 @@ void Mesh::dispose() {
         vertexArray = 0;
         isLoaded = false;
     }
+}
+
+void Mesh::loadVertexArray() {
+    glGenVertexArrays(1, &vertexArray);
+    glGenBuffers(1, &vertexBuffer);
+    if (!indices.empty()) {
+        glGenBuffers(1, &elementBuffer);
+    }
+    glBindVertexArray(vertexArray);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) (vertices.size() * sizeof(Vertex)), vertices.data(), GL_STATIC_DRAW);
+    if (!indices.empty()) {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr) (indices.size() * sizeof(unsigned int)), indices.data(),
+                     GL_STATIC_DRAW);
+    }
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, position));
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, normal));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, vertexColor));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, textureCoordinates));
+    glEnableVertexAttribArray(3);
+    glBindVertexArray(0);
 }

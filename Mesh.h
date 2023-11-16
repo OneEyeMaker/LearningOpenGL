@@ -13,13 +13,19 @@ public:
 
     bool loadCube();
 
+    bool loadOctahedron();
+
     void setupRendering(const Shader &shader) const;
 
-    void draw() const;
+    void drawArrays() const;
+
+    void drawElements() const;
 
     void dispose();
 
 private:
+    void loadVertexArray();
+
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
     std::vector<Texture> textures;
