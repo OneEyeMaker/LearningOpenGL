@@ -109,7 +109,11 @@ bool Application::setupRendering() {
     if (!shader.compileAndLink("shaders/vertex.glsl", "shaders/fragment.glsl")) {
         return false;
     }
-    if (!mesh.loadCube()) {
+    unsigned int textureIndex = 0;
+    if (!cube.loadCube(textureIndex)) {
+        return false;
+    }
+    if (!octahedron.loadOctahedron(textureIndex)) {
         return false;
     }
     for (int x = -1; x <= 1; x += 2) {
@@ -125,7 +129,6 @@ bool Application::setupRendering() {
     shader.use();
     shader.setVector3("lightPosition", glm::vec3(0.0f, 2.0f, 0.0f));
     shader.setVector3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-    mesh.setupRendering(shader);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     if (glfwRawMouseMotionSupported()) {
         glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
@@ -148,24 +151,29 @@ void Application::render() {
     meshRotations[selectedMesh] += inputAxes * (2.0f * deltaTime);
     camera.processKeyboardInput(cameraInputAxes, deltaTime);
     shader.setVector3("viewPosition", camera.position);
-    auto view = camera.getViewMatrix();
-    auto projection = camera.getProjectionMatrix();
+    shader.setMatrix4("transform.view", camera.getViewMatrix());
+    shader.setMatrix4("transform.projection", camera.getProjectionMatrix());
+    cube.attachTextures(shader);
     for (int index = 0; index < meshRotations.size(); ++index) {
-        auto model = glm::mat4(1.0f);
-        model = glm::translate(model, meshPositions[index]);
+        auto model = glm::translate(glm::mat4(1.0f), meshPositions[index]);
         model *= glm::toMat4(glm::quat(meshRotations[index]));
         auto normal = glm::inverseTranspose(glm::mat3(model));
         shader.setMatrix4("transform.model", model);
-        shader.setMatrix4("transform.view", view);
-        shader.setMatrix4("transform.projection", projection);
         shader.setMatrix3("transform.normal", normal);
-        mesh.draw();
+        cube.drawElements();
     }
+    octahedron.attachTextures(shader);
+    auto model = glm::mat4(1.0f);
+    auto normal = glm::inverseTranspose(glm::mat3(model));
+    shader.setMatrix4("transform.model", model);
+    shader.setMatrix3("transform.normal", normal);
+    octahedron.drawArrays();
 }
 
 void Application::dispose() {
     if (window != nullptr) {
-        mesh.dispose();
+        cube.dispose();
+        octahedron.dispose();
         shader.dispose();
         if (glfwRawMouseMotionSupported()) {
             glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);

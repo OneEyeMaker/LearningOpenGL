@@ -48,7 +48,8 @@ private:
     static bool isSetupComplete;
 
     Camera camera;
-    Mesh mesh;
+    Mesh cube;
+    Mesh octahedron;
     Shader shader;
     std::vector<glm::vec3> meshPositions;
     std::vector<glm::vec3> meshRotations;
