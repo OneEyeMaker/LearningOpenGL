@@ -109,11 +109,11 @@ bool Application::setupRendering() {
     if (!shader.compileAndLink("shaders/vertex.glsl", "shaders/fragment.glsl")) {
         return false;
     }
-    unsigned int textureIndex = 0;
-    if (!cube.loadCube(textureIndex)) {
+    if (!cube.createCube()) {
         return false;
     }
-    if (!octahedron.loadOctahedron(textureIndex)) {
+    octahedron.useTexturesOf(cube);
+    if (!octahedron.createOctahedron()) {
         return false;
     }
     for (int x = -1; x <= 1; x += 2) {
@@ -127,6 +127,8 @@ bool Application::setupRendering() {
     camera.setMovementSpeed(2.0f);
     camera.setMouseSensitivity(0.0625f);
     shader.use();
+    cube.attachTextures(shader);
+    octahedron.attachTextures(shader);
     shader.setVector3("lightPosition", glm::vec3(0.0f, 2.0f, 0.0f));
     shader.setVector3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -153,7 +155,6 @@ void Application::render() {
     shader.setVector3("viewPosition", camera.position);
     shader.setMatrix4("transform.view", camera.getViewMatrix());
     shader.setMatrix4("transform.projection", camera.getProjectionMatrix());
-    cube.attachTextures(shader);
     for (int index = 0; index < meshRotations.size(); ++index) {
         auto model = glm::translate(glm::mat4(1.0f), meshPositions[index]);
         model *= glm::toMat4(glm::quat(meshRotations[index]));
@@ -162,7 +163,6 @@ void Application::render() {
         shader.setMatrix3("transform.normal", normal);
         cube.drawElements();
     }
-    octahedron.attachTextures(shader);
     auto model = glm::mat4(1.0f);
     auto normal = glm::inverseTranspose(glm::mat3(model));
     shader.setMatrix4("transform.model", model);
@@ -260,6 +260,8 @@ void Application::handleKeyEvent(GLFWwindow *window, int key, [[maybe_unused]] i
             case GLFW_KEY_KP_0:
                 application->camera.reset();
                 break;
+            default:
+                break;
         }
     } else if (action == GLFW_RELEASE) {
         switch (key) {
@@ -286,6 +288,8 @@ void Application::handleKeyEvent(GLFWwindow *window, int key, [[maybe_unused]] i
             case GLFW_KEY_KP_7:
             case GLFW_KEY_KP_9:
                 application->inputAxes.z = 0.0f;
+                break;
+            default:
                 break;
         }
     }
