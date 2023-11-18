@@ -1,5 +1,19 @@
 #version 330 core
 
+struct Material {
+    sampler2D backgroundTexture;
+    sampler2D foregroundTexture;
+    sampler2D specularTexture;
+    float specularExponent;
+};
+
+struct Light {
+    vec3 position;
+    vec3 ambientColor;
+    vec3 diffuseColor;
+    vec3 specularColor;
+};
+
 in vec3 vertexPosition;
 in vec3 vertexNormal;
 in vec3 vertexColor;
@@ -7,17 +21,15 @@ in vec2 textureCoordinates;
 
 out vec4 fragmentColor;
 
-uniform sampler2D backgroundTexture;
-uniform sampler2D foregroundTexture;
-uniform vec3 lightPosition;
+uniform Material material;
+uniform Light light;
 uniform vec3 viewPosition;
-uniform vec3 lightColor;
 
 const float threshold = 0.75f;
 
 void main() {
-    vec4 backgroundColor = texture(backgroundTexture, textureCoordinates);
-    vec4 foregroundColor = texture(foregroundTexture, textureCoordinates);
+    vec4 backgroundColor = texture(material.backgroundTexture, textureCoordinates);
+    vec4 foregroundColor = texture(material.foregroundTexture, textureCoordinates);
     vec4 mixedColor;
     if (foregroundColor.a >= threshold && backgroundColor.a >= threshold) {
         mixedColor = mix(foregroundColor, backgroundColor, 0.5f);
@@ -31,15 +43,18 @@ void main() {
         objectColor = mix(vertexColor, mixedColor.rgb, mixedColor.a);
     }
 
-    float ambientConstant = 0.125f;
+    vec3 ambientColor = objectColor * light.ambientColor;
 
     vec3 normal = normalize(vertexNormal);
-    vec3 lightDirection = normalize(lightPosition - vertexPosition);
+    vec3 lightDirection = normalize(light.position - vertexPosition);
     float diffuseConstant = max(dot(normal, lightDirection), 0.0f);
+    vec3 diffuseColor = objectColor * light.diffuseColor * diffuseConstant;
 
     vec3 viewDirection = normalize(viewPosition - vertexPosition);
     vec3 reflectionDirection = reflect(-lightDirection, normal);
-    float specularConstant = 0.75f * pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16.0f);
+    float specularConstant = pow(max(dot(viewDirection, reflectionDirection), 0.0f), material.specularExponent);
+    vec3 specularColor = texture(material.specularTexture, textureCoordinates).rgb;
+    specularColor *= light.specularColor * specularConstant;
 
-    fragmentColor = vec4(((ambientConstant + diffuseConstant) * objectColor + specularConstant) * lightColor, 1.0f);
+    fragmentColor = vec4(ambientColor + diffuseColor + specularColor, 1.0f);
 }
