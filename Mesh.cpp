@@ -1,3 +1,5 @@
+#include <iterator>
+
 #include <glad/glad.h>
 
 #include "Mesh.h"
@@ -9,15 +11,11 @@ Mesh::Mesh() {
     isLoaded = false;
 }
 
-bool Mesh::loadCube(unsigned int &textureIndex) {
-    textures = {
-            Texture("backgroundTexture", textureIndex++),
-            Texture("foregroundTexture", textureIndex++)
-    };
-    if (!textures[0].load("resources/textures/background.png") ||
-        !textures[1].load("resources/textures/foreground.png")) {
-        dispose();
-        return false;
+bool Mesh::createCube() {
+    if (textures.empty()) {
+        if (!loadTextures()) {
+            return false;
+        }
     }
     vertices = {
             // front face
@@ -99,15 +97,11 @@ bool Mesh::loadCube(unsigned int &textureIndex) {
     return true;
 }
 
-bool Mesh::loadOctahedron(unsigned int &textureIndex) {
-    textures = {
-            Texture("backgroundTexture", textureIndex++),
-            Texture("foregroundTexture", textureIndex++)
-    };
-    if (!textures[0].load("resources/textures/background.png") ||
-        !textures[1].load("resources/textures/foreground.png")) {
-        dispose();
-        return false;
+bool Mesh::createOctahedron() {
+    if (textures.empty()) {
+        if (!loadTextures()) {
+            return false;
+        }
     }
     const float sqrt1_2 = glm::sqrt(0.5f);
     const float sqrt1_3 = 1.0f / glm::sqrt(3.0f);
@@ -177,6 +171,11 @@ bool Mesh::loadOctahedron(unsigned int &textureIndex) {
     return true;
 }
 
+void Mesh::useTexturesOf(const Mesh &mesh) {
+    textures.clear();
+    std::copy(mesh.textures.begin(), mesh.textures.end(), std::back_inserter(textures));
+}
+
 void Mesh::attachTextures(const Shader &shader) const {
     for (const auto &texture: textures) {
         texture.attach(shader);
@@ -221,6 +220,20 @@ void Mesh::dispose() {
         vertexArray = 0;
         isLoaded = false;
     }
+}
+
+bool Mesh::loadTextures() {
+    textures = {
+            Texture("backgroundTexture", "resources/textures/background.png", 0),
+            Texture("foregroundTexture", "resources/textures/foreground.png", 1)
+    };
+    for (auto &texture: textures) {
+        if (!texture.load()) {
+            dispose();
+            return false;
+        }
+    }
+    return true;
 }
 
 void Mesh::loadVertexArray() {

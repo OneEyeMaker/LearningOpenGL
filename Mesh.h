@@ -11,9 +11,11 @@ class Mesh {
 public:
     Mesh();
 
-    bool loadCube(unsigned int &textureIndex);
+    bool createCube();
 
-    bool loadOctahedron(unsigned int &textureIndex);
+    bool createOctahedron();
+
+    void useTexturesOf(const Mesh &mesh);
 
     void attachTextures(const Shader &shader) const;
 
@@ -24,6 +26,8 @@ public:
     void dispose();
 
 private:
+    bool loadTextures();
+
     void loadVertexArray();
 
     std::vector<Vertex> vertices;
