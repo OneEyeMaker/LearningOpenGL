@@ -224,8 +224,9 @@ void Mesh::dispose() {
 
 bool Mesh::loadTextures() {
     textures = {
-            Texture("backgroundTexture", "resources/textures/background.png", 0),
-            Texture("foregroundTexture", "resources/textures/foreground.png", 1)
+            Texture("material.backgroundTexture", "resources/textures/background.png", 0),
+            Texture("material.foregroundTexture", "resources/textures/foreground.png", 1),
+            Texture("material.specularTexture", "resources/textures/specular.png", 2)
     };
     for (auto &texture: textures) {
         if (!texture.load()) {

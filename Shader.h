@@ -16,6 +16,8 @@ public:
 
     void setInteger(const std::string &name, int value) const;
 
+    void setFloat(const std::string &name, float value) const;
+
     void setVector3(const std::string &name, const glm::vec3 &vector) const;
 
     void setMatrix3(const std::string &name, const glm::mat3 &matrix) const;

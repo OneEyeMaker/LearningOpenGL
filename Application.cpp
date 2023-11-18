@@ -129,8 +129,11 @@ bool Application::setupRendering() {
     shader.use();
     cube.attachTextures(shader);
     octahedron.attachTextures(shader);
-    shader.setVector3("lightPosition", glm::vec3(0.0f, 2.0f, 0.0f));
-    shader.setVector3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    shader.setFloat("material.specularExponent", 16.0f);
+    shader.setVector3("light.position", glm::vec3(0.0f, 2.0f, 0.0f));
+    shader.setVector3("light.ambientColor", glm::vec3(0.25f, 0.25f, 0.25f));
+    shader.setVector3("light.diffuseColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    shader.setVector3("light.specularColor", glm::vec3(0.75f, 0.75f, 0.75f));
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     if (glfwRawMouseMotionSupported()) {
         glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
@@ -138,7 +141,7 @@ bool Application::setupRendering() {
     glfwSwapInterval(1);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-    glClearColor(0.125f, 0.125f, 0.125f, 1.0f);
+    glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
     lastFrameTime = (float) glfwGetTime();
     return true;
 }
