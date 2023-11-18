@@ -9,9 +9,9 @@
 
 class Texture {
 public:
-    explicit Texture(std::string name, unsigned int index = 0);
+    explicit Texture(std::string name, std::string imagePath, unsigned int index = 0);
 
-    bool load(const std::string &texturePath);
+    bool load();
 
     void attach(const Shader &shader) const;
 
@@ -23,6 +23,7 @@ private:
     void destroy();
 
     std::string name;
+    std::string imagePath;
     unsigned int handle;
     unsigned int index;
     bool isLoaded;

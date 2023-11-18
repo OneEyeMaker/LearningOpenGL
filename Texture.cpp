@@ -5,12 +5,13 @@
 
 #include "Texture.h"
 
-Texture::Texture(std::string name, unsigned int index) : name(std::move(name)), index(index) {
+Texture::Texture(std::string name, std::string imagePath, unsigned int index) :
+        name(std::move(name)), imagePath(std::move(imagePath)), index(index) {
     handle = 0;
     isLoaded = false;
 }
 
-bool Texture::load(const std::string &texturePath) {
+bool Texture::load() {
     glGenTextures(1, &handle);
     use();
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -21,9 +22,9 @@ bool Texture::load(const std::string &texturePath) {
     int height = 0;
     int channelsCount = 0;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char *imageData = stbi_load(texturePath.c_str(), &width, &height, &channelsCount, 0);
+    unsigned char *imageData = stbi_load(imagePath.c_str(), &width, &height, &channelsCount, 0);
     if (imageData == nullptr) {
-        std::cout << "Error: unable to load image file \"" << texturePath << "\"." << std::endl;
+        std::cout << "Error: unable to load image file \"" << imagePath << "\"." << std::endl;
         destroy();
         return false;
     }
