@@ -11,6 +11,8 @@ class Mesh {
 public:
     Mesh();
 
+    bool createTetrahedron();
+
     bool createCube();
 
     bool createOctahedron();

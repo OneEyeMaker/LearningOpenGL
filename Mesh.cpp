@@ -11,6 +11,53 @@ Mesh::Mesh() {
     isLoaded = false;
 }
 
+bool Mesh::createTetrahedron() {
+    if (textures.empty()) {
+        if (!loadTextures()) {
+            return false;
+        }
+    }
+    const float sqrt1_3 = glm::inversesqrt(3.0f);
+    const float sqrt1_12 = 0.5f * sqrt1_3;
+    const float sqrt3_8 = glm::sqrt(0.375f);
+    const float sqrt1_24 = 0.5f * glm::inversesqrt(6.0f);
+    const float sqrt2 = glm::sqrt(2.0f);
+    const float sqrt2_3 = glm::sqrt(2.0f / 3.0f);
+    vertices = {
+            Vertex(glm::vec3(0.5f, -sqrt1_24, -sqrt1_12), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f),
+                   glm::vec2(0.0f)),
+            Vertex(glm::vec3(0.0f, -sqrt1_24, sqrt1_3), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f),
+                   glm::vec2(0.0f)),
+            Vertex(glm::vec3(-0.5f, -sqrt1_24, -sqrt1_12), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f),
+                   glm::vec2(0.0f)),
+
+            Vertex(glm::vec3(0.0f, sqrt3_8, 0.0f), glm::vec3(-sqrt2_3, 1.0f / 3.0f, sqrt2 / 3.0f),
+                   glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(0.5f, 0.5f)),
+            Vertex(glm::vec3(-0.5f, -sqrt1_24, -sqrt1_12), glm::vec3(-sqrt2_3, 1.0f / 3.0f, sqrt2 / 3.0f),
+                   glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 0.0f)),
+            Vertex(glm::vec3(0.0f, -sqrt1_24, sqrt1_3), glm::vec3(-sqrt2_3, 1.0f / 3.0f, sqrt2 / 3.0f),
+                   glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)),
+
+            Vertex(glm::vec3(0.0f, sqrt3_8, 0.0f), glm::vec3(sqrt2_3, 1.0f / 3.0f, sqrt2 / 3.0f),
+                   glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(0.5f, 0.5f)),
+            Vertex(glm::vec3(0.0f, -sqrt1_24, sqrt1_3), glm::vec3(sqrt2_3, 1.0f / 3.0f, sqrt2 / 3.0f),
+                   glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)),
+            Vertex(glm::vec3(0.5f, -sqrt1_24, -sqrt1_12), glm::vec3(sqrt2_3, 1.0f / 3.0f, sqrt2 / 3.0f),
+                   glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
+
+            Vertex(glm::vec3(0.0f, sqrt3_8, 0.0f), glm::vec3(0.0f, 1.0f / 3.0f, -2.0f * sqrt2 / 3.0f),
+                   glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(0.5f, 0.5f)),
+            Vertex(glm::vec3(0.5f, -sqrt1_24, -sqrt1_12), glm::vec3(0.0f, 1.0f / 3.0f, -2.0f * sqrt2 / 3.0f),
+                   glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
+            Vertex(glm::vec3(-0.5f, -sqrt1_24, -sqrt1_12), glm::vec3(0.0f, 1.0f / 3.0f, -2.0f * sqrt2 / 3.0f),
+                   glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 1.0f))
+    };
+    indices = {};
+    loadVertexArray();
+    isLoaded = true;
+    return true;
+}
+
 bool Mesh::createCube() {
     if (textures.empty()) {
         if (!loadTextures()) {
@@ -104,7 +151,7 @@ bool Mesh::createOctahedron() {
         }
     }
     const float sqrt1_2 = glm::sqrt(0.5f);
-    const float sqrt1_3 = 1.0f / glm::sqrt(3.0f);
+    const float sqrt1_3 = glm::inversesqrt(3.0f);
     vertices = {
             Vertex(glm::vec3(-sqrt1_2, 0.0f, 0.0f), glm::vec3(-sqrt1_3, sqrt1_3, sqrt1_3), glm::vec3(1.0f, 0.0f, 0.0f),
                    glm::vec2(0.0f, 0.0f)),
