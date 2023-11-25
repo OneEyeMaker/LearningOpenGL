@@ -17,6 +17,8 @@ public:
 
     bool createOctahedron();
 
+    bool createTorus();
+
     void useTexturesOf(const Mesh &mesh);
 
     void attachTextures(const Shader &shader) const;

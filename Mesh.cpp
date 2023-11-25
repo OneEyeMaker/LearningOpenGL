@@ -1,6 +1,8 @@
 #include <iterator>
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/ext/scalar_constants.hpp>
 
 #include "Mesh.h"
 
@@ -213,6 +215,68 @@ bool Mesh::createOctahedron() {
                    glm::vec2(0.0f, 0.0f))
     };
     indices = {};
+    loadVertexArray();
+    isLoaded = true;
+    return true;
+}
+
+bool Mesh::createTorus() {
+    if (textures.empty()) {
+        if (!loadTextures()) {
+            return false;
+        }
+    }
+    vertices = {};
+    indices = {};
+    const float largeRadius = 0.75f;
+    const float smallRadius = 0.25f;
+    const int largeSegments = 16;
+    const int smallSegments = 16;
+    const float largeAngleShift = 2.0f * glm::pi<float>() / (float) largeSegments;
+    const float smallAngleShift = 2.0f * glm::pi<float>() / (float) smallSegments;
+    const glm::vec3 redColor(1.0f, 0.0f, 0.0f);
+    const glm::vec3 greenColor(0.0f, 1.0f, 0.0f);
+    const glm::vec3 blueColor(0.0f, 0.0f, 1.0f);
+    const glm::vec3 yellowColor(1.0f, 1.0f, 0.0f);
+    for (int largeIndex = 0; largeIndex <= largeSegments; ++largeIndex) {
+        float largeAngle = largeAngleShift * (float) largeIndex;
+        float largeOffset = (float) largeIndex / (float) largeSegments * 4.0f;
+        glm::vec3 color;
+        if (largeOffset < 1.0f) {
+            color = glm::mix(redColor, greenColor, largeOffset);
+        } else if (largeOffset < 2.0f) {
+            color = glm::mix(greenColor, blueColor, largeOffset - 1.0f);
+        } else if (largeOffset < 3.0f) {
+            color = glm::mix(blueColor, yellowColor, largeOffset - 2.0f);
+        } else {
+            color = glm::mix(yellowColor, redColor, largeOffset - 3.0f);
+        }
+        for (int smallIndex = 0; smallIndex <= smallSegments; ++smallIndex) {
+            float smallAngle = smallAngleShift * (float) smallIndex;
+            float smallOffset = (float) smallIndex / (float) smallSegments * 2.0f;
+            glm::vec3 position(
+                    (largeRadius + smallRadius * glm::cos(smallAngle)) * glm::cos(largeAngle),
+                    smallRadius * glm::sin(smallAngle),
+                    (largeRadius + smallRadius * glm::cos(smallAngle)) * glm::sin(largeAngle)
+            );
+            glm::vec3 normal(
+                    smallRadius * glm::cos(smallAngle) * glm::cos(largeAngle),
+                    smallRadius * glm::sin(smallAngle),
+                    smallRadius * glm::cos(smallAngle) * glm::sin(largeAngle)
+            );
+            vertices.emplace_back(position, glm::normalize(normal), color,
+                                  glm::vec2(largeOffset, smallOffset));
+            if (smallIndex == smallSegments || largeIndex == largeSegments) {
+                continue;
+            }
+            indices.push_back(largeIndex * (smallSegments + 1) + smallIndex);
+            indices.push_back(largeIndex * (smallSegments + 1) + smallIndex + 1);
+            indices.push_back((largeIndex + 1) * (smallSegments + 1) + smallIndex + 1);
+            indices.push_back(largeIndex * (smallSegments + 1) + smallIndex);
+            indices.push_back((largeIndex + 1) * (smallSegments + 1) + smallIndex + 1);
+            indices.push_back((largeIndex + 1) * (smallSegments + 1) + smallIndex);
+        }
+    }
     loadVertexArray();
     isLoaded = true;
     return true;
