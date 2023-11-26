@@ -130,11 +130,12 @@ bool Application::setupRendering() {
     cube.attachTextures(shader);
     octahedron.attachTextures(shader);
     shader.setFloat("material.specularExponent", 16.0f);
-    shader.setVector3("light.position", glm::vec3(0.0f, 2.0f, 0.0f));
     shader.setVector3("light.ambientColor", glm::vec3(0.25f, 0.25f, 0.25f));
     shader.setVector3("light.diffuseColor", glm::vec3(1.0f, 1.0f, 1.0f));
     shader.setVector3("light.specularColor", glm::vec3(0.75f, 0.75f, 0.75f));
-    shader.setVector3("light.attenuationCoefficient", glm::vec3(1.0f, 0.25f, 0.0625f));
+    shader.setVector3("light.attenuationCoefficient", glm::vec3(1.0f, 0.25f, 0.375f));
+    shader.setFloat("light.innerCutOff", glm::cos(glm::radians(15.0f)));
+    shader.setFloat("light.outerCutOff", glm::cos(glm::radians(25.0f)));
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     if (glfwRawMouseMotionSupported()) {
         glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
@@ -156,9 +157,11 @@ void Application::render() {
     shader.use();
     meshRotations[selectedMesh] += inputAxes * (2.0f * deltaTime);
     camera.processKeyboardInput(cameraInputAxes, deltaTime);
-    shader.setVector3("viewPosition", camera.position);
     shader.setMatrix4("transform.view", camera.getViewMatrix());
     shader.setMatrix4("transform.projection", camera.getProjectionMatrix());
+    shader.setVector3("light.position", camera.position);
+    shader.setVector3("light.direction", camera.frontDirection);
+    shader.setVector3("viewPosition", camera.position);
     for (int index = 0; index < meshRotations.size(); ++index) {
         auto model = glm::translate(glm::mat4(1.0f), meshPositions[index]);
         model *= glm::toMat4(glm::quat(meshRotations[index]));

@@ -9,10 +9,13 @@ struct Material {
 
 struct Light {
     vec3 position;
+    vec3 direction;
     vec3 ambientColor;
     vec3 diffuseColor;
     vec3 specularColor;
     vec3 attenuationCoefficient;
+    float innerCutOff;
+    float outerCutOff;
 };
 
 in vec3 vertexPosition;
@@ -57,9 +60,12 @@ void main() {
     vec3 specularColor = texture(material.specularTexture, textureCoordinates).rgb;
     specularColor *= light.specularColor * specularConstant;
 
+    float lightOffset = dot(lightDirection, normalize(-light.direction));
+    float intensity = clamp((lightOffset - light.outerCutOff) / (light.innerCutOff - light.outerCutOff), 0.0f, 1.0f);
+
     float distance = length(light.position - vertexPosition);
     float attenuation = 1.0f / (light.attenuationCoefficient.x + light.attenuationCoefficient.y * distance +
         light.attenuationCoefficient.z * distance * distance);
 
-    fragmentColor = vec4((ambientColor + diffuseColor + specularColor) * attenuation, 1.0f);
+    fragmentColor = vec4((ambientColor + (diffuseColor + specularColor) * intensity) * attenuation, 1.0f);
 }
