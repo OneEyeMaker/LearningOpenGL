@@ -134,6 +134,7 @@ bool Application::setupRendering() {
     shader.setVector3("light.ambientColor", glm::vec3(0.25f, 0.25f, 0.25f));
     shader.setVector3("light.diffuseColor", glm::vec3(1.0f, 1.0f, 1.0f));
     shader.setVector3("light.specularColor", glm::vec3(0.75f, 0.75f, 0.75f));
+    shader.setVector3("light.attenuationCoefficient", glm::vec3(1.0f, 0.25f, 0.0625f));
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     if (glfwRawMouseMotionSupported()) {
         glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
