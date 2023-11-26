@@ -159,7 +159,7 @@ void Application::render() {
     camera.processKeyboardInput(cameraInputAxes, deltaTime);
     shader.setMatrix4("transform.view", camera.getViewMatrix());
     shader.setMatrix4("transform.projection", camera.getProjectionMatrix());
-    shader.setVector3("light.position", camera.position);
+    shader.setVector3("light.position", camera.position + camera.frontDirection * 0.5f);
     shader.setVector3("light.direction", camera.frontDirection);
     shader.setVector3("viewPosition", camera.position);
     for (int index = 0; index < meshRotations.size(); ++index) {
